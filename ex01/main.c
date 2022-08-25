@@ -6,7 +6,7 @@
 /*   By: aantonio <aantonio@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 19:29:03 by aantonio          #+#    #+#             */
-/*   Updated: 2022/08/24 21:02:50 by aantonio         ###   ########.fr       */
+/*   Updated: 2022/08/25 13:32:16 by aantonio         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,30 +38,18 @@ void	write_file(int fd)
 	while (end)
 	{
 		end = read(fd, &c, 1);
+		if (!end)
+			break ;
 		write(1, &c, 1);
 	}
-	write(1, "\n", 1);
 }
 
-int	main(int argc, char *argv[])
+void	print_files(int argc, char *argv[])
 {
-	char	str[100];
-	int		fd;
-	int		i;
-	int		end;
-	int		bufferlength;
+	int	bufferlength;
+	int	fd;
+	int	i;
 
-	end = 1;
-	if (argc == 1)
-	{
-		while (end)
-		{
-			end = read(1, str, 1);
-		}
-		bufferlength = ft_strlen(str);
-		write(1, str, bufferlength);
-		return (0);
-	}
 	i = 0;
 	while (i < argc - 1)
 	{
@@ -69,11 +57,37 @@ int	main(int argc, char *argv[])
 		if (fd == -1)
 		{
 			bufferlength = ft_strlen(strerror(errno));
+			write(2, argv[0], ft_strlen(argv[0]));
+			write(2, ": ", 2);
+			write(2, argv[i + 1], ft_strlen(argv[i + 1]));
+			write(2, ": ", 2);
 			write(2, strerror(errno), bufferlength);
-			return (-1);
+			write(2, "\n", 1);
+			i++;
+			continue ;
 		}
 		write_file(fd);
 		close(fd);
 		i++;
 	}
+}
+
+int	main(int argc, char *argv[])
+{
+	char	str[3];
+	int		end;
+
+	end = 1;
+	if (argc == 1)
+	{
+		while (end)
+		{
+			end = read(0, str, 1);
+			if (*str == '\n' && !end)
+				break ;
+			write(1, str, 1);
+		}
+	}
+	print_files(argc, argv);
+	return (0);
 }
